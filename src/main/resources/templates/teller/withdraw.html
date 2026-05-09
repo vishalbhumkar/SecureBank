@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>SecureBank — Cash Withdrawal</title>
+<link
+	href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+	rel="stylesheet">
+<style>
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box
+}
+
+:root {
+	--primary: #1a3c5e;
+	--primary-light: #2563a8;
+	--accent: #f0a500;
+	--success: #16a34a;
+	--danger: #dc2626;
+	--bg: #f1f5f9;
+	--card: #fff;
+	--text: #1e293b;
+	--muted: #64748b;
+	--border: #e2e8f0;
+}
+
+body {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	background: var(--bg);
+	color: var(--text)
+}
+
+.navbar {
+	background: linear-gradient(135deg, var(--primary) 0%,
+		var(--primary-light) 100%);
+	padding: 0 32px;
+	height: 64px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	box-shadow: 0 2px 12px rgba(26, 60, 94, 0.2);
+}
+
+.nav-brand {
+	font-size: 1.4rem;
+	font-weight: 700;
+	color: #fff
+}
+
+.nav-brand span {
+	color: var(--accent)
+}
+
+.layout {
+	display: flex;
+	min-height: calc(100vh - 64px)
+}
+
+.sidebar {
+	width: 220px;
+	background: var(--card);
+	border-right: 1px solid var(--border);
+	padding: 24px 0;
+}
+
+.sidebar-section {
+	font-size: 0.68rem;
+	font-weight: 700;
+	color: var(--muted);
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	padding: 16px 20px 6px;
+}
+
+.nav-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 20px;
+	font-size: 0.875rem;
+	color: var(--muted);
+	text-decoration: none;
+	border-left: 3px solid transparent;
+	transition: all 0.15s;
+}
+
+.nav-item.active, .nav-item:hover {
+	background: #f8fafc;
+	color: var(--primary);
+	border-left-color: var(--primary-light);
+	font-weight: 600;
+}
+
+.main {
+	flex: 1;
+	padding: 32px
+}
+
+.back-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--muted);
+	text-decoration: none;
+	font-size: 0.85rem;
+	margin-bottom: 20px;
+}
+
+.page-title {
+	font-size: 1.4rem;
+	font-weight: 700;
+	margin-bottom: 24px
+}
+
+.form-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 24px;
+	max-width: 800px;
+}
+
+.card {
+	background: var(--card);
+	border-radius: 14px;
+	border: 1px solid var(--border);
+	padding: 26px
+}
+
+.card-title {
+	font-size: 0.95rem;
+	font-weight: 700;
+	margin-bottom: 18px
+}
+
+.alert {
+	padding: 12px 16px;
+	border-radius: 10px;
+	font-size: 0.875rem;
+	margin-bottom: 16px
+}
+
+.alert-danger {
+	background: #fef2f2;
+	color: var(--danger);
+	border: 1px solid #fecaca
+}
+
+.alert-success {
+	background: #f0fdf4;
+	color: var(--success);
+	border: 1px solid #bbf7d0
+}
+
+.form-group {
+	margin-bottom: 16px
+}
+
+.form-label {
+	display: block;
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin-bottom: 5px
+}
+
+.form-control {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1.5px solid var(--border);
+	border-radius: 8px;
+	font-size: 0.875rem;
+	font-family: inherit;
+	background: #f8fafc;
+	outline: none;
+	transition: all 0.2s;
+}
+
+.form-control:focus {
+	border-color: var(--primary-light);
+	background: #fff;
+	box-shadow: 0 0 0 3px rgba(37, 99, 168, 0.1);
+}
+
+.btn-submit {
+	width: 100%;
+	padding: 12px;
+	background: linear-gradient(135deg, var(--danger), #ef4444);
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	font-size: 0.9rem;
+	font-weight: 700;
+	font-family: inherit;
+	cursor: pointer;
+	margin-top: 4px;
+}
+
+.btn-submit:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+}
+
+.account-preview {
+	background: linear-gradient(135deg, #dc2626, #ef4444);
+	border-radius: 12px;
+	padding: 20px;
+	color: #fff;
+	margin-bottom: 16px;
+}
+
+.preview-label {
+	font-size: 0.72rem;
+	opacity: 0.8;
+	text-transform: uppercase;
+	letter-spacing: 0.5px
+}
+
+.preview-value {
+	font-size: 1.3rem;
+	font-weight: 700;
+	margin-top: 4px
+}
+
+.preview-sub {
+	font-size: 0.8rem;
+	opacity: 0.8;
+	margin-top: 2px
+}
+
+.info-row {
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 0;
+	border-bottom: 1px solid var(--border);
+	font-size: 0.83rem
+}
+
+.info-row:last-child {
+	border-bottom: none
+}
+
+.info-label {
+	color: var(--muted)
+}
+
+.info-value {
+	font-weight: 600
+}
+
+.btn-logout {
+	padding: 8px 18px;
+	background: rgba(255, 255, 255, 0.15);
+	color: #fff;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 8px;
+	font-size: 0.82rem;
+	font-family: inherit;
+	cursor: pointer;
+}
+</style>
+</head>
+<body>
+	<nav class="navbar">
+		<div class="nav-brand">
+			Secure<span>Bank</span>
+		</div>
+		<form th:action="@{/auth/logout}" method="post">
+			<input type="hidden" th:name="${_csrf.parameterName}"
+				th:value="${_csrf.token}" />
+			<button type="submit" class="btn-logout">Logout</button>
+		</form>
+	</nav>
+
+	<div class="layout">
+		<aside class="sidebar">
+			<div class="sidebar-section">Operations</div>
+			<a th:href="@{/teller/dashboard}" class="nav-item"> <span>🏠</span>
+				Dashboard
+			</a> <a th:href="@{/teller/deposit}" class="nav-item"> <span>💰</span>
+				Cash Deposit
+			</a> <a th:href="@{/teller/withdraw}" class="nav-item active"> <span>💸</span>
+				Cash Withdrawal
+			</a>
+		</aside>
+
+		<main class="main">
+			<a th:href="@{/teller/dashboard}" class="back-link"> ← Back to
+				Dashboard </a>
+			<div class="page-title">💸 Cash Withdrawal</div>
+
+			<div class="form-grid">
+				<div class="card">
+					<div class="card-title">Withdrawal Details</div>
+
+					<div th:if="${errorMsg}" class="alert alert-danger">
+						⚠️ <span th:text="${errorMsg}"></span>
+					</div>
+
+					<form th:action="@{/teller/withdraw}" method="post">
+						<input type="hidden" th:name="${_csrf.parameterName}"
+							th:value="${_csrf.token}" />
+
+						<div class="form-group">
+							<label class="form-label"> Account Number </label> <input
+								type="text" name="accountNumber" class="form-control"
+								th:value="${accountNumber}" placeholder="e.g. SB1234567890"
+								required />
+						</div>
+
+						<div class="form-group">
+							<label class="form-label"> Withdrawal Amount (₹) </label> <input
+								type="number" name="amount" class="form-control"
+								placeholder="Enter amount" min="1" step="0.01" required />
+						</div>
+
+						<div class="form-group">
+							<label class="form-label"> Description (Optional) </label> <input
+								type="text" name="description" class="form-control"
+								placeholder="e.g. Bill payment" />
+						</div>
+
+						<button type="submit" class="btn-submit">💸 Process
+							Withdrawal</button>
+					</form>
+				</div>
+
+				<div th:if="${account != null}">
+					<div class="account-preview">
+						<div class="preview-label">Account Found</div>
+						<div class="preview-value" th:text="${account.accountNumber}">
+						</div>
+						<div class="preview-sub" th:text="${account.user.fullName}">
+						</div>
+					</div>
+					<div class="card">
+						<div class="info-row">
+							<span class="info-label">Holder</span> <span class="info-value"
+								th:text="${account.user.fullName}"> </span>
+						</div>
+						<div class="info-row">
+							<span class="info-label">Balance</span> <span class="info-value"
+								th:text="'Rs.' + #numbers.formatDecimal(account.balance,1,'COMMA',2,'POINT')"></span>
+						</div>
+						<div class="info-row">
+							<span class="info-label">Status</span> <span class="info-value"
+								style="color: #16a34a"> Active ✓ </span>
+						</div>
+					</div>
+				</div>
+
+				<div th:if="${account == null and errorMsg == null}" class="card"
+					style="display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 0.85rem; text-align: center;">
+					<div>
+						<div style="font-size: 2.5rem; margin-bottom: 8px">🔍</div>
+						Enter account number<br>to see details
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction Alert</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Arial,sans-serif;
+            background:#f1f5f9;padding:20px}
+        .wrapper{max-width:580px;margin:0 auto}
+        .header{
+            padding:20px 32px;
+            display:flex;align-items:center;
+            justify-content:space-between;
+            border-radius:16px 16px 0 0;
+        }
+        .header.credit{
+            background:linear-gradient(135deg,
+                #16a34a,#22c55e);
+        }
+        .header.debit{
+            background:linear-gradient(135deg,
+                #dc2626,#ef4444);
+        }
+        .header-left{}
+        .bank-name{
+            font-size:1.1rem;font-weight:700;
+            color:#fff;
+        }
+        .bank-name span{color:rgba(255,255,255,0.7)}
+        .alert-type{
+            font-size:0.75rem;
+            color:rgba(255,255,255,0.85);
+            margin-top:2px;text-transform:uppercase;
+            letter-spacing:1px;
+        }
+        .header-icon{
+            font-size:2.2rem;
+        }
+        .body{background:#fff;padding:32px}
+        .amount-section{
+            text-align:center;
+            padding:24px;background:#f8fafc;
+            border-radius:12px;margin-bottom:24px;
+            border:2px solid;
+        }
+        .amount-section.credit{
+            border-color:#bbf7d0;
+            background:linear-gradient(135deg,
+                #f0fdf4,#dcfce7);
+        }
+        .amount-section.debit{
+            border-color:#fecaca;
+            background:linear-gradient(135deg,
+                #fef2f2,#fee2e2);
+        }
+        .amount-label{
+            font-size:0.72rem;font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:1px;margin-bottom:6px;
+        }
+        .credit .amount-label{color:#16a34a}
+        .debit .amount-label{color:#dc2626}
+        .amount-value{
+            font-size:2.4rem;font-weight:700;
+        }
+        .credit .amount-value{color:#15803d}
+        .debit .amount-value{color:#dc2626}
+        .amount-type{
+            font-size:0.8rem;margin-top:4px;
+        }
+        .credit .amount-type{color:#16a34a}
+        .debit .amount-type{color:#dc2626}
+        .details-table{
+            width:100%;border-collapse:collapse;
+            margin-bottom:20px;
+        }
+        .details-table tr td{
+            padding:10px 0;font-size:0.875rem;
+            border-bottom:1px solid #f1f5f9;
+        }
+        .details-table tr:last-child td{
+            border-bottom:none;
+        }
+        .dt-label{color:#64748b;width:45%}
+        .dt-value{
+            font-weight:600;color:#1e293b;
+            text-align:right;
+        }
+        .balance-row{
+            background:#eff6ff;
+            border-radius:10px;padding:14px 16px;
+            display:flex;justify-content:space-between;
+            align-items:center;margin-bottom:20px;
+        }
+        .bal-label{
+            font-size:0.82rem;font-weight:600;
+            color:#2563a8;
+        }
+        .bal-value{
+            font-size:1.1rem;font-weight:700;
+            color:#1e293b;
+        }
+        .warning-box{
+            background:#fffbeb;
+            border:1px solid #fde68a;
+            border-radius:8px;padding:12px 14px;
+            font-size:0.78rem;color:#78350f;
+        }
+        .footer{
+            background:#f8fafc;
+            border-radius:0 0 16px 16px;
+            padding:16px 32px;text-align:center;
+        }
+        .footer-text{
+            font-size:0.72rem;color:#94a3b8;
+            line-height:1.6;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <div th:class="${type == 'CREDIT'}
+         ? 'header credit' : 'header debit'">
+        <div class="header-left">
+            <div class="bank-name">
+                Secure<span>Bank</span>
+            </div>
+            <div class="alert-type">
+                Transaction Alert
+            </div>
+        </div>
+        <div class="header-icon"
+             th:text="${type == 'CREDIT'}
+                 ? '💰' : '💸'">
+        </div>
+    </div>
+
+    <div class="body">
+
+        <p style="color:#1e293b;font-weight:600;
+            margin-bottom:16px;font-size:0.92rem">
+            Dear
+            <span th:text="${fullName}">
+                Customer
+            </span>,
+        </p>
+
+        <!-- Amount Section -->
+        <div th:class="${type == 'CREDIT'}
+             ? 'amount-section credit'
+             : 'amount-section debit'">
+            <div class="amount-label"
+                 th:text="${type == 'CREDIT'}
+                     ? 'Amount Credited'
+                     : 'Amount Debited'">
+            </div>
+            <div class="amount-value">
+                ₹<span th:text="${#numbers
+                    .formatDecimal(amount,1,
+                    'COMMA',2,'POINT')}">
+                </span>
+            </div>
+            <div class="amount-type"
+                 th:text="${transactionType}">
+                TRANSFER
+            </div>
+        </div>
+
+        <!-- Details -->
+        <table class="details-table">
+            <tr>
+                <td class="dt-label">
+                    Account Number
+                </td>
+                <td class="dt-value"
+                    style="font-family:monospace"
+                    th:text="${accountNumber}">
+                </td>
+            </tr>
+            <tr>
+                <td class="dt-label">
+                    Reference No.
+                </td>
+                <td class="dt-value"
+                    style="font-family:monospace;
+                           font-size:0.8rem"
+                    th:text="${referenceNumber}">
+                </td>
+            </tr>
+            <tr th:if="${description != null
+                and !description.isEmpty()}">
+                <td class="dt-label">
+                    Description
+                </td>
+                <td class="dt-value"
+                    th:text="${description}">
+                </td>
+            </tr>
+            <tr>
+                <td class="dt-label">
+                    Date & Time
+                </td>
+                <td class="dt-value"
+                    th:text="${timestamp}">
+                </td>
+            </tr>
+            <tr th:if="${type == 'CREDIT'
+                and fromAccount != null}">
+                <td class="dt-label">From</td>
+                <td class="dt-value"
+                    style="font-family:monospace"
+                    th:text="${fromAccount}">
+                </td>
+            </tr>
+            <tr th:if="${type == 'DEBIT'
+                and toAccount != null}">
+                <td class="dt-label">To</td>
+                <td class="dt-value"
+                    style="font-family:monospace"
+                    th:text="${toAccount}">
+                </td>
+            </tr>
+        </table>
+
+        <!-- Balance -->
+        <div class="balance-row">
+            <span class="bal-label">
+                Available Balance
+            </span>
+            <span class="bal-value">
+                ₹<span th:text="${#numbers
+                    .formatDecimal(newBalance,1,
+                    'COMMA',2,'POINT')}">
+                </span>
+            </span>
+        </div>
+
+        <!-- Warning -->
+        <div class="warning-box">
+            🔒 If you did not authorize this
+            transaction, please contact us
+            immediately at support@securebank.com
+            or call our helpline.
+        </div>
+    </div>
+
+    <div class="footer">
+        <p class="footer-text">
+            © 2024
+            <span th:text="${bankName}">
+                SecureBank
+            </span>.
+            This is an automated alert.
+            Do not reply to this email.
+        </p>
+    </div>
+</div>
+</body>
+</html>

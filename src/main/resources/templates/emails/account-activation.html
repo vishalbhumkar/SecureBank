@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Activated</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Arial,sans-serif;
+            background:#f1f5f9;padding:20px}
+        .wrapper{max-width:600px;margin:0 auto}
+        .header{
+            background:linear-gradient(135deg,
+                #16a34a 0%,#22c55e 100%);
+            border-radius:16px 16px 0 0;
+            padding:36px 40px;text-align:center;
+        }
+        .header-icon{
+            font-size:3rem;margin-bottom:10px;
+        }
+        .header-title{
+            font-size:1.4rem;font-weight:700;
+            color:#fff;
+        }
+        .header-sub{
+            color:rgba(255,255,255,0.85);
+            font-size:0.85rem;margin-top:4px;
+        }
+        .body{background:#fff;padding:40px}
+        .greeting{
+            font-size:1.2rem;font-weight:700;
+            color:#1e293b;margin-bottom:16px;
+        }
+        .text{
+            color:#64748b;font-size:0.92rem;
+            line-height:1.8;margin-bottom:16px;
+        }
+        .account-card{
+            background:linear-gradient(135deg,
+                #1a3c5e,#2563a8);
+            border-radius:14px;
+            padding:24px 28px;
+            margin:24px 0;color:#fff;
+        }
+        .account-label{
+            font-size:0.72rem;font-weight:600;
+            text-transform:uppercase;
+            letter-spacing:1px;
+            color:rgba(255,255,255,0.7);
+            margin-bottom:6px;
+        }
+        .account-number{
+            font-size:1.6rem;font-weight:700;
+            letter-spacing:2px;
+            font-family:'Courier New',monospace;
+            margin-bottom:14px;
+        }
+        .account-meta{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+        }
+        .meta-item{}
+        .meta-label{
+            font-size:0.68rem;
+            color:rgba(255,255,255,0.65);
+            text-transform:uppercase;
+            letter-spacing:0.5px;
+        }
+        .meta-value{
+            font-size:0.88rem;font-weight:600;
+            color:#fff;margin-top:2px;
+        }
+        .quick-actions{
+            background:#f8fafc;
+            border-radius:10px;padding:18px;
+            margin:20px 0;
+        }
+        .qa-title{
+            font-size:0.82rem;font-weight:700;
+            color:#1e293b;margin-bottom:10px;
+        }
+        .qa-list{
+            list-style:none;
+        }
+        .qa-list li{
+            font-size:0.82rem;color:#64748b;
+            padding:4px 0;
+            display:flex;align-items:center;gap:8px;
+        }
+        .footer{
+            background:#f8fafc;
+            border-radius:0 0 16px 16px;
+            padding:20px 40px;text-align:center;
+        }
+        .footer-text{
+            font-size:0.75rem;color:#94a3b8;
+            line-height:1.6;
+        }
+        .logo{
+            font-size:1rem;font-weight:700;
+            color:#1a3c5e;margin-bottom:8px;
+        }
+        .logo span{color:#f0a500}
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <div class="header">
+        <div class="header-icon">✅</div>
+        <div class="header-title">
+            Account Activated!
+        </div>
+        <div class="header-sub">
+            Your banking journey starts now
+        </div>
+    </div>
+
+    <div class="body">
+        <div class="greeting">
+            Congratulations,
+            <span th:text="${fullName}">
+                Customer
+            </span>!
+        </div>
+
+        <p class="text">
+            Your
+            <strong th:text="${bankName}">
+                SecureBank
+            </strong>
+            account has been successfully activated.
+            You can now login and access all
+            banking services.
+        </p>
+
+        <!-- Account Card -->
+        <div class="account-card">
+            <div class="account-label">
+                Your Account Number
+            </div>
+            <div class="account-number"
+                 th:text="${accountNumber}">
+                SB1234567890
+            </div>
+            <div class="account-meta">
+                <div class="meta-item">
+                    <div class="meta-label">
+                        Account Type
+                    </div>
+                    <div class="meta-value">
+                        Savings Account
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        Status
+                    </div>
+                    <div class="meta-value">
+                        ✓ Active
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        Activated On
+                    </div>
+                    <div class="meta-value"
+                         th:text="${activatedOn}">
+                        15 Jan 2024
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        Bank Code
+                    </div>
+                    <div class="meta-value">
+                        SBNK0001
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="qa-title">
+                You can now:
+            </div>
+            <ul class="qa-list">
+                <li>✅ Transfer funds instantly
+                    to any SecureBank account</li>
+                <li>✅ Apply for personal &
+                    home loans</li>
+                <li>✅ Open Fixed Deposits
+                    with competitive rates</li>
+                <li>✅ Download PDF account
+                    statements</li>
+                <li>✅ View transaction history
+                    in real-time</li>
+            </ul>
+        </div>
+
+        <p class="text" style="font-size:0.82rem;
+            color:#94a3b8;margin-top:20px">
+            Keep your account number safe.
+            Never share your password or OTP
+            with anyone including bank staff.
+        </p>
+    </div>
+
+    <div class="footer">
+        <div class="logo">
+            Secure<span>Bank</span>
+        </div>
+        <p class="footer-text">
+            © 2024
+            <span th:text="${bankName}">
+                SecureBank
+            </span>.
+            All rights reserved.
+        </p>
+    </div>
+
+</div>
+</body>
+</html>

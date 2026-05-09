@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SecureBank — API Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+          rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --primary:#1a3c5e;
+            --primary-light:#2563a8;
+            --accent:#f0a500;--bg:#0f172a;
+            --card:#1e293b;--text:#e2e8f0;
+            --muted:#94a3b8;--border:#334155;
+            --success:#22c55e;--danger:#ef4444;
+            --warning:#f59e0b;--info:#38bdf8;
+        }
+        body{font-family:'Plus Jakarta Sans',sans-serif;
+            background:var(--bg);color:var(--text);
+            min-height:100vh}
+
+        /* TOP NAVBAR */
+        .navbar{
+            background:linear-gradient(135deg,
+                var(--primary) 0%,
+                var(--primary-light) 100%);
+            padding:0 32px;height:64px;display:flex;
+            align-items:center;
+            justify-content:space-between;
+            box-shadow:0 2px 20px rgba(0,0,0,0.3);
+            position:sticky;top:0;z-index:100;
+        }
+        .nav-brand{
+            font-size:1.3rem;font-weight:700;
+            color:#fff;display:flex;
+            align-items:center;gap:10px;
+        }
+        .nav-brand span{color:var(--accent)}
+        .api-version{
+            background:rgba(240,165,0,0.2);
+            color:var(--accent);padding:3px 10px;
+            border-radius:20px;font-size:0.72rem;
+            font-weight:700;letter-spacing:0.5px;
+        }
+        .nav-right{display:flex;gap:12px}
+        .nav-link{
+            color:rgba(255,255,255,0.8);
+            text-decoration:none;font-size:0.85rem;
+            padding:6px 14px;border-radius:6px;
+            transition:all 0.2s;
+        }
+        .nav-link:hover{
+            background:rgba(255,255,255,0.15);
+            color:#fff;
+        }
+
+        /* LAYOUT */
+        .layout{display:flex;min-height:calc(100vh - 64px)}
+
+        /* SIDEBAR */
+        .sidebar{
+            width:260px;background:#0f172a;
+            border-right:1px solid var(--border);
+            padding:24px 0;position:sticky;
+            top:64px;height:calc(100vh - 64px);
+            overflow-y:auto;flex-shrink:0;
+        }
+        .sidebar-section{
+            font-size:0.65rem;font-weight:700;
+            color:var(--muted);text-transform:uppercase;
+            letter-spacing:1.5px;
+            padding:16px 20px 6px;
+        }
+        .sidebar-link{
+            display:flex;align-items:center;gap:8px;
+            padding:8px 20px;font-size:0.82rem;
+            color:var(--muted);text-decoration:none;
+            transition:all 0.15s;
+            border-left:2px solid transparent;
+        }
+        .sidebar-link:hover,
+        .sidebar-link.active{
+            color:var(--info);
+            border-left-color:var(--info);
+            background:rgba(56,189,248,0.08);
+        }
+        .method-dot{
+            width:6px;height:6px;
+            border-radius:50%;flex-shrink:0;
+        }
+        .dot-get{background:var(--success)}
+        .dot-post{background:var(--warning)}
+        .dot-put{background:var(--info)}
+        .dot-delete{background:var(--danger)}
+
+        /* MAIN */
+        .main{flex:1;padding:32px 40px;
+            max-width:900px}
+        .page-header{margin-bottom:32px}
+        .page-title{
+            font-size:1.8rem;font-weight:700;
+            color:#fff;margin-bottom:8px;
+        }
+        .page-desc{
+            color:var(--muted);font-size:0.9rem;
+            line-height:1.7;
+        }
+
+        /* BASE URL */
+        .base-url{
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius:10px;padding:14px 18px;
+            margin-bottom:32px;
+            display:flex;align-items:center;gap:12px;
+        }
+        .base-label{
+            font-size:0.72rem;font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.5px;color:var(--muted);
+            flex-shrink:0;
+        }
+        .base-value{
+            font-family:'JetBrains Mono',monospace;
+            font-size:0.88rem;color:var(--info);
+        }
+
+        /* SECTION */
+        .section{margin-bottom:40px}
+        .section-title{
+            font-size:1.1rem;font-weight:700;
+            color:#fff;margin-bottom:16px;
+            padding-bottom:10px;
+            border-bottom:1px solid var(--border);
+            display:flex;align-items:center;gap:10px;
+        }
+
+        /* ENDPOINT */
+        .endpoint{
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius:12px;
+            margin-bottom:12px;overflow:hidden;
+        }
+        .endpoint-header{
+            padding:14px 18px;display:flex;
+            align-items:center;gap:12px;
+            cursor:pointer;
+            transition:background 0.15s;
+        }
+        .endpoint-header:hover{
+            background:rgba(255,255,255,0.03);
+        }
+        .method-badge{
+            padding:4px 10px;border-radius:6px;
+            font-size:0.7rem;font-weight:700;
+            letter-spacing:0.5px;
+            min-width:56px;text-align:center;
+            font-family:'JetBrains Mono',monospace;
+        }
+        .badge-get{
+            background:rgba(34,197,94,0.15);
+            color:var(--success);
+        }
+        .badge-post{
+            background:rgba(245,158,11,0.15);
+            color:var(--warning);
+        }
+        .badge-put{
+            background:rgba(56,189,248,0.15);
+            color:var(--info);
+        }
+        .badge-delete{
+            background:rgba(239,68,68,0.15);
+            color:var(--danger);
+        }
+        .endpoint-path{
+            font-family:'JetBrains Mono',monospace;
+            font-size:0.88rem;color:#e2e8f0;flex:1;
+        }
+        .endpoint-desc{
+            font-size:0.78rem;color:var(--muted);
+        }
+        .auth-required{
+            background:rgba(240,165,0,0.15);
+            color:var(--accent);padding:2px 8px;
+            border-radius:4px;font-size:0.68rem;
+            font-weight:700;
+        }
+        .public-badge{
+            background:rgba(34,197,94,0.15);
+            color:var(--success);padding:2px 8px;
+            border-radius:4px;font-size:0.68rem;
+            font-weight:700;
+        }
+        .endpoint-body{
+            padding:18px;
+            border-top:1px solid var(--border);
+            display:none;
+        }
+        .endpoint.open .endpoint-body{
+            display:block;
+        }
+        .endpoint.open .endpoint-header{
+            background:rgba(255,255,255,0.02);
+        }
+        .param-table{
+            width:100%;border-collapse:collapse;
+            margin-bottom:14px;font-size:0.82rem;
+        }
+        .param-table th{
+            text-align:left;padding:7px 10px;
+            font-size:0.68rem;font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.5px;color:var(--muted);
+            border-bottom:1px solid var(--border);
+        }
+        .param-table td{
+            padding:7px 10px;
+            border-bottom:1px solid rgba(51,65,85,0.5);
+            color:var(--text);
+        }
+        .param-name{
+            font-family:'JetBrains Mono',monospace;
+            color:var(--info);font-size:0.8rem;
+        }
+        .param-required{
+            color:var(--danger);font-size:0.7rem;
+            font-weight:700;
+        }
+        .code-block{
+            background:#0f172a;
+            border:1px solid var(--border);
+            border-radius:8px;padding:14px 16px;
+            font-family:'JetBrains Mono',monospace;
+            font-size:0.78rem;color:#e2e8f0;
+            overflow-x:auto;margin-bottom:10px;
+            white-space:pre;
+        }
+        .code-label{
+            font-size:0.68rem;font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.5px;color:var(--muted);
+            margin-bottom:6px;
+        }
+        .response-code{
+            display:inline-block;
+            padding:2px 8px;border-radius:4px;
+            font-family:'JetBrains Mono',monospace;
+            font-size:0.75rem;font-weight:700;
+            margin-right:6px;
+        }
+        .code-200{background:rgba(34,197,94,0.15);
+            color:var(--success)}
+        .code-400{background:rgba(239,68,68,0.15);
+            color:var(--danger)}
+        .code-401{background:rgba(245,158,11,0.15);
+            color:var(--warning)}
+        .toggle-arrow{
+            margin-left:auto;color:var(--muted);
+            font-size:0.75rem;transition:transform 0.2s;
+        }
+        .endpoint.open .toggle-arrow{
+            transform:rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-brand">
+        Secure<span>Bank</span>
+        <span class="api-version">REST API v1</span>
+    </div>
+    <div class="nav-right">
+        <a th:href="@{/customer/dashboard}"
+           class="nav-link">← Back to App</a>
+    </div>
+</nav>
+
+<div class="layout">
+
+    <!-- SIDEBAR NAV -->
+    <aside class="sidebar">
+        <div class="sidebar-section">Auth</div>
+        <a href="#auth" class="sidebar-link">
+            <span class="method-dot dot-post"></span>
+            POST /register
+        </a>
+        <a href="#auth" class="sidebar-link">
+            <span class="method-dot dot-post"></span>
+            POST /login
+        </a>
+        <a href="#auth" class="sidebar-link">
+            <span class="method-dot dot-get"></span>
+            GET /me
+        </a>
+        <a href="#auth" class="sidebar-link">
+            <span class="method-dot dot-get"></span>
+            GET /dashboard
+        </a>
+        <div class="sidebar-section">Accounts</div>
+        <a href="#accounts" class="sidebar-link">
+            <span class="method-dot dot-get"></span>
+            GET /accounts
+        </a>
+        <a href="#accounts" class="sidebar-link">
+            <span class="method-dot dot-get"></span>
+            GET /accounts/{id}
+        </a>
+        <a href="#accounts" class="sidebar-link">
+            <span class="method-dot dot-get"></span>
+            GET /accounts/balance
+        </a>
+        <div class="sidebar-section">
+            Transactions
+        </div>
+        <a href="#transactions" class="sidebar-link">
+            <span class="method-dot dot-get"></span>
+            GET /transactions
+        </a>
+        <a href="#transactions" class="sidebar-link">
+            <span class="method-dot dot-post"></span>
+            POST /transactions/transfer
+        </a>
+        <a href="#transactions" class="sidebar-link">
+            <span class="method-dot dot-get"></span>
+            GET /transactions/recent
+        </a>
+        <div class="sidebar-section">Loans</div>
+        <a href="#loans" class="sidebar-link">
+            <span class="method-dot dot-get"></span>
+            GET /loans
+        </a>
+        <a href="#loans" class="sidebar-link">
+            <span class="method-dot dot-post"></span>
+            POST /loans/apply
+        </a>
+        <a href="#loans" class="sidebar-link">
+            <span class="method-dot dot-get"></span>
+            GET /loans/{id}
+        </a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <div class="page-header">
+            <div class="page-title">
+                SecureBank REST API
+            </div>
+            <div class="page-desc">
+                Complete REST API for SecureBank.
+                All endpoints return JSON with a
+                consistent response wrapper.
+                Use session-based authentication.
+            </div>
+        </div>
+
+        <!-- BASE URL -->
+        <div class="base-url">
+            <span class="base-label">Base URL</span>
+            <span class="base-value">
+                http://localhost:8080/api/v1
+            </span>
+        </div>
+
+        <!-- STANDARD RESPONSE FORMAT -->
+        <div class="section">
+            <div class="section-title">
+                📦 Standard Response Format
+            </div>
+            <div class="code-label">
+                All responses follow this structure:
+            </div>
+            <div class="code-block">{
+  "success": true,
+  "message": "Success",
+  "status": 200,
+  "timestamp": "2024-01-15T10:30:00",
+  "data": { ... }
+}</div>
+        </div>
+
+        <!-- AUTH SECTION -->
+        <div class="section" id="auth">
+            <div class="section-title">
+                🔐 Authentication
+            </div>
+
+            <!-- Register -->
+            <div class="endpoint" id="ep-register">
+                <div class="endpoint-header"
+                     onclick="toggle('ep-register')">
+                    <span class="method-badge badge-post">
+                        POST
+                    </span>
+                    <span class="endpoint-path">
+                        /auth/register
+                    </span>
+                    <span class="endpoint-desc">
+                        Register new customer
+                    </span>
+                    <span class="public-badge">
+                        PUBLIC
+                    </span>
+                    <span class="toggle-arrow">▼</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-label">
+                        Request Body
+                    </div>
+                    <div class="code-block">{
+  "fullName": "John Doe",
+  "email": "john@example.com",
+  "password": "MyPass@123",
+  "confirmPassword": "MyPass@123",
+  "phone": "9876543210",
+  "address": "123 Main Street, Pune"
+}</div>
+                    <div class="code-label">
+                        Response
+                        <span class="response-code code-200">
+                            200
+                        </span>
+                    </div>
+                    <div class="code-block">{
+  "success": true,
+  "message": "Registration successful!",
+  "data": "john@example.com",
+  "status": 200
+}</div>
+                </div>
+            </div>
+
+            <!-- Login -->
+            <div class="endpoint" id="ep-login">
+                <div class="endpoint-header"
+                     onclick="toggle('ep-login')">
+                    <span class="method-badge badge-post">
+                        POST
+                    </span>
+                    <span class="endpoint-path">
+                        /auth/login
+                    </span>
+                    <span class="endpoint-desc">
+                        Authenticate user
+                    </span>
+                    <span class="public-badge">
+                        PUBLIC
+                    </span>
+                    <span class="toggle-arrow">▼</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-label">
+                        Request Body
+                    </div>
+                    <div class="code-block">{
+  "email": "customer@securebank.com",
+  "password": "Customer@123"
+}</div>
+                    <div class="code-label">
+                        Response
+                        <span class="response-code code-200">
+                            200
+                        </span>
+                    </div>
+                    <div class="code-block">{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "email": "customer@securebank.com",
+    "status": "authenticated"
+  }
+}</div>
+                </div>
+            </div>
+
+            <!-- Me -->
+            <div class="endpoint" id="ep-me">
+                <div class="endpoint-header"
+                     onclick="toggle('ep-me')">
+                    <span class="method-badge badge-get">
+                        GET
+                    </span>
+                    <span class="endpoint-path">
+                        /auth/me
+                    </span>
+                    <span class="endpoint-desc">
+                        Get current user info
+                    </span>
+                    <span class="auth-required">
+                        AUTH REQUIRED
+                    </span>
+                    <span class="toggle-arrow">▼</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-label">Response
+                        <span class="response-code code-200">
+                            200
+                        </span>
+                    </div>
+                    <div class="code-block">{
+  "success": true,
+  "data": {
+    "id": 1,
+    "fullName": "John Doe",
+    "email": "customer@securebank.com",
+    "role": "CUSTOMER",
+    "active": true,
+    "locked": false
+  }
+}</div>
+                </div>
+            </div>
+
+            <!-- Dashboard -->
+            <div class="endpoint" id="ep-dashboard">
+                <div class="endpoint-header"
+                     onclick="toggle('ep-dashboard')">
+                    <span class="method-badge badge-get">
+                        GET
+                    </span>
+                    <span class="endpoint-path">
+                        /auth/dashboard
+                    </span>
+                    <span class="endpoint-desc">
+                        Full dashboard data
+                    </span>
+                    <span class="auth-required">
+                        AUTH REQUIRED
+                    </span>
+                    <span class="toggle-arrow">▼</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-label">Response
+                        <span class="response-code code-200">
+                            200
+                        </span>
+                    </div>
+                    <div class="code-block">{
+  "success": true,
+  "data": {
+    "fullName": "John Doe",
+    "email": "customer@securebank.com",
+    "totalBalance": 50000.00,
+    "totalAccounts": 1,
+    "totalTransactions": 5,
+    "pendingLoans": 0,
+    "accounts": [...]
+  }
+}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCOUNTS SECTION -->
+        <div class="section" id="accounts">
+            <div class="section-title">
+                🏦 Accounts
+            </div>
+
+            <div class="endpoint" id="ep-accounts">
+                <div class="endpoint-header"
+                     onclick="toggle('ep-accounts')">
+                    <span class="method-badge badge-get">
+                        GET
+                    </span>
+                    <span class="endpoint-path">
+                        /accounts
+                    </span>
+                    <span class="endpoint-desc">
+                        Get all my accounts
+                    </span>
+                    <span class="auth-required">
+                        AUTH REQUIRED
+                    </span>
+                    <span class="toggle-arrow">▼</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-label">Response
+                        <span class="response-code code-200">
+                            200
+                        </span>
+                    </div>
+                    <div class="code-block">{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "accountNumber": "SB1234567890",
+      "accountType": "SAVINGS",
+      "balance": 50000.00,
+      "active": true,
+      "ownerName": "John Doe",
+      "ownerEmail": "john@example.com"
+    }
+  ]
+}</div>
+                </div>
+            </div>
+
+            <div class="endpoint"
+                 id="ep-account-balance">
+                <div class="endpoint-header"
+                     onclick="toggle(
+                         'ep-account-balance')">
+                    <span class="method-badge badge-get">
+                        GET
+                    </span>
+                    <span class="endpoint-path">
+                        /accounts/balance
+                    </span>
+                    <span class="endpoint-desc">
+                        Get total balance
+                    </span>
+                    <span class="auth-required">
+                        AUTH REQUIRED
+                    </span>
+                    <span class="toggle-arrow">▼</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-label">Response
+                        <span class="response-code code-200">
+                            200
+                        </span>
+                    </div>
+                    <div class="code-block">{
+  "success": true,
+  "message": "Total balance retrieved",
+  "data": 50000.00
+}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRANSACTIONS SECTION -->
+        <div class="section" id="transactions">
+            <div class="section-title">
+                💳 Transactions
+            </div>
+
+            <div class="endpoint"
+                 id="ep-txn-history">
+                <div class="endpoint-header"
+                     onclick="toggle('ep-txn-history')">
+                    <span class="method-badge badge-get">
+                        GET
+                    </span>
+                    <span class="endpoint-path">
+                        /transactions
+                    </span>
+                    <span class="endpoint-desc">
+                        Transaction history
+                    </span>
+                    <span class="auth-required">
+                        AUTH REQUIRED
+                    </span>
+                    <span class="toggle-arrow">▼</span>
+                </div>
+                <div class="endpoint-body">
+                    <table class="param-table">
+                        <thead>
+                            <tr>
+                                <th>Param</th>
+                                <th>Type</th>
+                                <th>Required</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="param-name">
+                                    accountId
+                                </td>
+                                <td>Long</td>
+                                <td>No</td>
+                                <td>
+                                    Filter by account ID
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="code-label">
+                        Example:
+                        GET /transactions?accountId=1
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint"
+                 id="ep-transfer">
+                <div class="endpoint-header"
+                     onclick="toggle('ep-transfer')">
+                    <span class="method-badge badge-post">
+                        POST
+                    </span>
+                    <span class="endpoint-path">
+                        /transactions/transfer
+                    </span>
+                    <span class="endpoint-desc">
+                        Fund transfer
+                    </span>
+                    <span class="auth-required">
+                        AUTH REQUIRED
+                    </span>
+                    <span class="toggle-arrow">▼</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-label">
+                        Request Body
+                    </div>
+                    <div class="code-block">{
+  "toAccountNumber": "SB9876543210",
+  "amount": 5000.00,
+  "description": "Rent payment"
+}</div>
+                    <div class="code-label">Response
+                        <span class="response-code code-200">
+                            200
+                        </span>
+                    </div>
+                    <div class="code-block">{
+  "success": true,
+  "message": "Transfer successful! Ref: TXN...",
+  "data": "TXNABC123DEF456"
+}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOANS SECTION -->
+        <div class="section" id="loans">
+            <div class="section-title">
+                🏛️ Loans
+            </div>
+
+            <div class="endpoint" id="ep-loans">
+                <div class="endpoint-header"
+                     onclick="toggle('ep-loans')">
+                    <span class="method-badge badge-get">
+                        GET
+                    </span>
+                    <span class="endpoint-path">
+                        /loans
+                    </span>
+                    <span class="endpoint-desc">
+                        Get my loan applications
+                    </span>
+                    <span class="auth-required">
+                        AUTH REQUIRED
+                    </span>
+                    <span class="toggle-arrow">▼</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-label">Response
+                        <span class="response-code code-200">
+                            200
+                        </span>
+                    </div>
+                    <div class="code-block">{
+  "success": true,
+  "message": "1 loans found",
+  "data": [
+    {
+      "id": 1,
+      "amount": 50000.00,
+      "tenureMonths": 24,
+      "interestRate": 10.5,
+      "status": "PENDING",
+      "appliedAt": "2024-01-15T10:30:00"
+    }
+  ]
+}</div>
+                </div>
+            </div>
+
+            <div class="endpoint" id="ep-loan-apply">
+                <div class="endpoint-header"
+                     onclick="toggle('ep-loan-apply')">
+                    <span class="method-badge badge-post">
+                        POST
+                    </span>
+                    <span class="endpoint-path">
+                        /loans/apply
+                    </span>
+                    <span class="endpoint-desc">
+                        Apply for loan
+                    </span>
+                    <span class="auth-required">
+                        AUTH REQUIRED
+                    </span>
+                    <span class="toggle-arrow">▼</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-label">
+                        Request Body
+                    </div>
+                    <div class="code-block">{
+  "amount": 50000.00,
+  "tenureMonths": 24
+}</div>
+                    <div class="code-label">Response
+                        <span class="response-code code-200">
+                            200
+                        </span>
+                    </div>
+                    <div class="code-block">{
+  "success": true,
+  "message": "Loan application submitted!",
+  "data": "Loan #1"
+}</div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    function toggle(id) {
+        const el = document.getElementById(id);
+        el.classList.toggle('open');
+    }
+</script>
+</body>
+</html>

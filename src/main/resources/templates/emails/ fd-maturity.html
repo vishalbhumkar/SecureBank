@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Fixed Deposit Matured</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Arial,sans-serif;
+            background:#f1f5f9;padding:20px}
+        .wrapper{max-width:580px;margin:0 auto}
+        .header{
+            background:linear-gradient(135deg,
+                #d97706,#f59e0b);
+            border-radius:16px 16px 0 0;
+            padding:32px;text-align:center;color:#fff;
+        }
+        .header-icon{
+            font-size:3rem;margin-bottom:8px;
+        }
+        .header-title{
+            font-size:1.4rem;font-weight:700;
+        }
+        .header-sub{
+            font-size:0.82rem;opacity:0.9;
+            margin-top:4px;
+        }
+        .body{background:#fff;padding:36px}
+        .greeting{
+            font-size:1rem;font-weight:600;
+            color:#1e293b;margin-bottom:14px;
+        }
+        .text{
+            color:#64748b;font-size:0.9rem;
+            line-height:1.7;margin-bottom:20px;
+        }
+
+        /* FD CARD */
+        .fd-card{
+            background:linear-gradient(135deg,
+                #fffbeb,#fef3c7);
+            border:2px solid #fde68a;
+            border-radius:14px;
+            padding:24px;margin:20px 0;
+        }
+        .fd-card-title{
+            font-size:0.78rem;font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.5px;
+            color:#92400e;margin-bottom:14px;
+        }
+        .fd-amount-row{
+            display:flex;justify-content:space-between;
+            align-items:center;margin-bottom:16px;
+            padding-bottom:16px;
+            border-bottom:1px solid #fde68a;
+        }
+        .fd-amount-label{
+            font-size:0.8rem;color:#78350f;
+        }
+        .fd-amount-value{
+            font-size:1.3rem;font-weight:700;
+            color:#92400e;
+        }
+        .fd-detail-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:10px;
+        }
+        .fd-detail-item{text-align:center}
+        .fd-detail-label{
+            font-size:0.68rem;color:#92400e;
+            text-transform:uppercase;
+            letter-spacing:0.5px;margin-bottom:3px;
+        }
+        .fd-detail-value{
+            font-size:0.88rem;font-weight:700;
+            color:#1e293b;
+        }
+
+        /* BREAKDOWN */
+        .breakdown{
+            background:#f8fafc;
+            border-radius:10px;padding:16px;
+            margin:16px 0;
+        }
+        .bd-title{
+            font-size:0.78rem;font-weight:700;
+            color:#1e293b;margin-bottom:10px;
+        }
+        .bd-row{
+            display:flex;justify-content:space-between;
+            padding:7px 0;font-size:0.875rem;
+            border-bottom:1px solid #e2e8f0;
+        }
+        .bd-row:last-child{
+            border-bottom:none;
+            font-weight:700;font-size:1rem;
+            padding-top:10px;margin-top:4px;
+        }
+        .bd-label{color:#64748b}
+        .bd-value{
+            font-weight:600;color:#1e293b;
+        }
+        .bd-row:last-child .bd-value{
+            color:#d97706;font-size:1.1rem;
+        }
+
+        /* CREDITED BOX */
+        .credited-box{
+            background:linear-gradient(135deg,
+                #1a3c5e,#2563a8);
+            border-radius:10px;padding:16px 20px;
+            display:flex;justify-content:space-between;
+            align-items:center;margin:16px 0;
+            color:#fff;
+        }
+        .credited-left{}
+        .credited-label{
+            font-size:0.72rem;
+            color:rgba(255,255,255,0.75);
+        }
+        .credited-account{
+            font-size:0.9rem;font-weight:700;
+            font-family:monospace;margin-top:2px;
+        }
+        .credited-amount{
+            font-size:1.4rem;font-weight:700;
+            color:#f0a500;
+        }
+
+        .cta-box{
+            background:#f0fdf4;
+            border:1px solid #bbf7d0;
+            border-radius:8px;padding:14px;
+            font-size:0.82rem;color:#15803d;
+        }
+        .footer{
+            background:#f8fafc;
+            border-radius:0 0 16px 16px;
+            padding:16px 32px;text-align:center;
+        }
+        .footer-text{
+            font-size:0.72rem;color:#94a3b8;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <div class="header">
+        <div class="header-icon">🎉</div>
+        <div class="header-title">
+            Fixed Deposit Matured!
+        </div>
+        <div class="header-sub">
+            Your investment has grown —
+            amount credited to your account
+        </div>
+    </div>
+
+    <div class="body">
+
+        <p class="greeting">
+            Dear
+            <span th:text="${fullName}">
+                Customer
+            </span>,
+        </p>
+
+        <p class="text">
+            Your Fixed Deposit has successfully
+            matured today. The maturity amount
+            including interest has been
+            <strong>credited to your account</strong>.
+        </p>
+
+        <!-- FD Card -->
+        <div class="fd-card">
+            <div class="fd-card-title">
+                Fixed Deposit Summary
+            </div>
+            <div class="fd-amount-row">
+                <div>
+                    <div class="fd-amount-label">
+                        Principal Amount
+                    </div>
+                </div>
+                <div class="fd-amount-value">
+                    ₹<span th:text="${#numbers
+                        .formatDecimal(principal,1,
+                        'COMMA',2,'POINT')}">
+                    </span>
+                </div>
+            </div>
+            <div class="fd-detail-grid">
+                <div class="fd-detail-item">
+                    <div class="fd-detail-label">
+                        Tenure
+                    </div>
+                    <div class="fd-detail-value"
+                         th:text="${tenureMonths}
+                             + ' months'">
+                    </div>
+                </div>
+                <div class="fd-detail-item">
+                    <div class="fd-detail-label">
+                        Interest Rate
+                    </div>
+                    <div class="fd-detail-value"
+                         th:text="${interestRate}
+                             + '% p.a.'">
+                    </div>
+                </div>
+                <div class="fd-detail-item">
+                    <div class="fd-detail-label">
+                        Start Date
+                    </div>
+                    <div class="fd-detail-value"
+                         th:text="${startDate}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Breakdown -->
+        <div class="breakdown">
+            <div class="bd-title">
+                💰 Maturity Breakdown
+            </div>
+            <div class="bd-row">
+                <span class="bd-label">
+                    Principal
+                </span>
+                <span class="bd-value">
+                    ₹<span th:text="${#numbers
+                        .formatDecimal(principal,1,
+                        'COMMA',2,'POINT')}">
+                    </span>
+                </span>
+            </div>
+            <div class="bd-row">
+                <span class="bd-label">
+                    Interest Earned
+                </span>
+                <span class="bd-value"
+                      style="color:#16a34a">
+                    + ₹<span th:text="${#numbers
+                        .formatDecimal(interest,1,
+                        'COMMA',2,'POINT')}">
+                    </span>
+                </span>
+            </div>
+            <div class="bd-row">
+                <span class="bd-label">
+                    Total Maturity Amount
+                </span>
+                <span class="bd-value">
+                    ₹<span th:text="${#numbers
+                        .formatDecimal(maturityAmount,
+                        1,'COMMA',2,'POINT')}">
+                    </span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Credited To -->
+        <div class="credited-box">
+            <div class="credited-left">
+                <div class="credited-label">
+                    Credited to Account
+                </div>
+                <div class="credited-account"
+                     th:text="${accountNumber}">
+                </div>
+            </div>
+            <div class="credited-amount">
+                ₹<span th:text="${#numbers
+                    .formatDecimal(maturityAmount,1,
+                    'COMMA',2,'POINT')}">
+                </span>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-box">
+            🏦 Want to reinvest? Login to your
+            account and open a new Fixed Deposit
+            with even better rates. Your money
+            grows faster when you reinvest!
+        </div>
+    </div>
+
+    <div class="footer">
+        <p class="footer-text">
+            © 2024
+            <span th:text="${bankName}">
+                SecureBank
+            </span>.
+            All rights reserved.
+        </p>
+    </div>
+
+</div>
+</body>
+</html>

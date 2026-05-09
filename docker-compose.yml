@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: securebank-db
+    restart: always
+    environment:
+      POSTGRES_DB: securebank
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Vishal
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL",
+             "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: securebank-app
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/securebank
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: SecureBank@2024
+      SPRING_MAIL_USERNAME: securebankadmin@gmail.com
+      SPRING_MAIL_PASSWORD: jkwd qcom wtdv vchx
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    volumes:
+      - app-logs:/app/logs
+
+volumes:
+  pgdata:
+  app-logs:

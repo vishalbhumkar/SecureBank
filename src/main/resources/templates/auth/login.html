@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureBank — Login</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+    <!-- Left Banner -->
+    <div class="auth-banner">
+        <div class="bank-logo">Secure<span>Bank</span></div>
+        <div class="bank-tagline">Your Trusted Banking Partner</div>
+        <ul class="banner-features">
+            <li>
+                <div class="feature-icon">🔒</div>
+                Bank-grade Security
+            </li>
+            <li>
+                <div class="feature-icon">⚡</div>
+                Instant Fund Transfers
+            </li>
+            <li>
+                <div class="feature-icon">📊</div>
+                Real-time Account Insights
+            </li>
+            <li>
+                <div class="feature-icon">🏦</div>
+                Loans & Fixed Deposits
+            </li>
+            <li>
+                <div class="feature-icon">📱</div>
+                24/7 Online Banking
+            </li>
+        </ul>
+    </div>
+
+    <!-- Right Form -->
+    <div class="auth-form-panel">
+        <h2 class="auth-title">Welcome Back</h2>
+        <p class="auth-subtitle">Sign in to your SecureBank account</p>
+
+        <!-- Error / Success Messages -->
+        <div th:if="${errorMsg}" class="alert alert-danger">
+            ⚠️ <span th:text="${errorMsg}"></span>
+        </div>
+        <div th:if="${successMsg}" class="alert alert-success">
+            ✅ <span th:text="${successMsg}"></span>
+        </div>
+
+        <!-- Login Form -->
+        <form th:action="@{/auth/login}" method="post">
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}"/>
+
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email"
+                       name="email"
+                       class="form-control"
+                       placeholder="you@example.com"
+                       required autofocus/>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password"
+                       name="password"
+                       class="form-control"
+                       placeholder="Enter your password"
+                       required/>
+            </div>
+
+            <div style="text-align:right; margin-bottom: 16px;">
+                <a th:href="@{/auth/forgot-password}"
+                   style="font-size:0.85rem; color:#2563a8; text-decoration:none;">
+                    Forgot Password?
+                </a>
+            </div>
+
+            <button type="submit" class="btn-primary-auth">
+                Sign In →
+            </button>
+        </form>
+
+        <div class="divider">or</div>
+
+        <div class="auth-links">
+            Don't have an account?
+            <a th:href="@{/auth/register}">Create Account</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

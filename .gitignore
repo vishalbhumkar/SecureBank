@@ -1,0 +1,30 @@
+# Maven
+target/
+*.class
+*.jar
+*.war
+
+# Eclipse/STS
+.classpath
+.project
+.settings/
+.springBeans
+
+# IntelliJ
+.idea/
+*.iml
+
+# Environment & Secrets
+.env
+*.env
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets — never commit
+src/main/resources/application.yml

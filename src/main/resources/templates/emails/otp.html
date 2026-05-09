@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Your OTP</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Arial,sans-serif;
+            background:#f1f5f9;padding:20px}
+        .wrapper{max-width:480px;margin:0 auto}
+        .header{
+            background:linear-gradient(135deg,
+                #1a3c5e,#2563a8);
+            border-radius:16px 16px 0 0;
+            padding:28px;text-align:center;
+        }
+        .logo{
+            font-size:1.3rem;font-weight:700;
+            color:#fff;
+        }
+        .logo span{color:#f0a500}
+        .header-sub{
+            font-size:0.78rem;
+            color:rgba(255,255,255,0.8);
+            margin-top:4px;
+            text-transform:uppercase;
+            letter-spacing:1px;
+        }
+        .body{
+            background:#fff;padding:36px;
+            text-align:center;
+        }
+        .shield-icon{
+            font-size:3rem;margin-bottom:12px;
+        }
+        .title{
+            font-size:1.2rem;font-weight:700;
+            color:#1e293b;margin-bottom:8px;
+        }
+        .purpose-badge{
+            display:inline-block;
+            padding:4px 14px;
+            background:#eff6ff;color:#2563a8;
+            border-radius:20px;font-size:0.75rem;
+            font-weight:700;margin-bottom:20px;
+            text-transform:uppercase;
+            letter-spacing:0.5px;
+        }
+        .text{
+            color:#64748b;font-size:0.88rem;
+            line-height:1.7;margin-bottom:24px;
+        }
+        .otp-container{
+            background:linear-gradient(135deg,
+                #f0f9ff,#e0f2fe);
+            border:2px dashed #38bdf8;
+            border-radius:14px;
+            padding:28px;margin:20px 0;
+        }
+        .otp-label{
+            font-size:0.72rem;font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:1px;color:#0369a1;
+            margin-bottom:10px;
+        }
+        .otp-code{
+            font-size:3rem;font-weight:700;
+            color:#0c4a6e;letter-spacing:10px;
+            font-family:'Courier New',monospace;
+        }
+        .expiry-badge{
+            display:inline-flex;
+            align-items:center;gap:6px;
+            background:#fee2e2;color:#dc2626;
+            padding:6px 14px;border-radius:20px;
+            font-size:0.78rem;font-weight:700;
+            margin-top:12px;
+        }
+        .security-note{
+            background:#fffbeb;
+            border:1px solid #fde68a;
+            border-radius:8px;
+            padding:14px;
+            font-size:0.78rem;color:#78350f;
+            margin-top:20px;text-align:left;
+        }
+        .security-note ul{
+            list-style:none;
+            margin-top:6px;
+        }
+        .security-note ul li{
+            padding:2px 0;
+        }
+        .footer{
+            background:#f8fafc;
+            border-radius:0 0 16px 16px;
+            padding:16px 32px;text-align:center;
+        }
+        .footer-text{
+            font-size:0.72rem;color:#94a3b8;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <div class="header">
+        <div class="logo">
+            Secure<span>Bank</span>
+        </div>
+        <div class="header-sub">
+            Security Verification
+        </div>
+    </div>
+
+    <div class="body">
+        <div class="shield-icon">🔐</div>
+
+        <div class="title">
+            Your Verification Code
+        </div>
+
+        <div class="purpose-badge"
+             th:text="${purposeLabel}">
+            Password Reset
+        </div>
+
+        <p class="text">
+            Dear
+            <strong th:text="${fullName}">
+                Customer
+            </strong>,<br>
+            Use the following OTP to complete
+            your
+            <span th:text="${purposeLabel}">
+            </span>.
+        </p>
+
+        <div class="otp-container">
+            <div class="otp-label">
+                One-Time Password
+            </div>
+            <div class="otp-code"
+                 th:text="${otp}">
+                123456
+            </div>
+            <div class="expiry-badge">
+                ⏱ Expires in 5 minutes
+            </div>
+        </div>
+
+        <div class="security-note">
+            <strong>🔒 Security Reminders:</strong>
+            <ul>
+                <li>✗ Never share this OTP
+                    with anyone</li>
+                <li>✗
+                    <span th:text="${bankName}">
+                        SecureBank
+                    </span>
+                    will never call you
+                    to ask for OTP</li>
+                <li>✗ Do not enter this OTP
+                    on any other website</li>
+                <li>✓ This OTP is valid for
+                    one-time use only</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p class="footer-text">
+            © 2024
+            <span th:text="${bankName}">
+                SecureBank
+            </span>.
+            If you did not request this OTP,
+            please ignore this email.
+        </p>
+    </div>
+
+</div>
+</body>
+</html>

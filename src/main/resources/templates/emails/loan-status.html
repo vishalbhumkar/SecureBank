@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Loan Application Update</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Arial,sans-serif;
+            background:#f1f5f9;padding:20px}
+        .wrapper{max-width:600px;margin:0 auto}
+        .header-approved{
+            background:linear-gradient(135deg,
+                #16a34a,#22c55e);
+            border-radius:16px 16px 0 0;
+            padding:32px;text-align:center;
+            color:#fff;
+        }
+        .header-rejected{
+            background:linear-gradient(135deg,
+                #dc2626,#ef4444);
+            border-radius:16px 16px 0 0;
+            padding:32px;text-align:center;
+            color:#fff;
+        }
+        .header-icon{
+            font-size:3rem;margin-bottom:10px;
+        }
+        .header-title{
+            font-size:1.4rem;font-weight:700;
+        }
+        .header-sub{
+            font-size:0.82rem;
+            opacity:0.85;margin-top:4px;
+        }
+        .body{background:#fff;padding:36px}
+        .greeting{
+            font-size:1.1rem;font-weight:700;
+            color:#1e293b;margin-bottom:12px;
+        }
+        .text{
+            color:#64748b;font-size:0.92rem;
+            line-height:1.8;margin-bottom:20px;
+        }
+
+        /* LOAN DETAIL CARD */
+        .loan-detail-card{
+            border-radius:12px;
+            padding:24px;margin:20px 0;
+        }
+        .loan-detail-card.approved{
+            background:linear-gradient(135deg,
+                #f0fdf4,#dcfce7);
+            border:1px solid #86efac;
+        }
+        .loan-detail-card.rejected{
+            background:#fef2f2;
+            border:1px solid #fecaca;
+        }
+        .loan-detail-title{
+            font-size:0.78rem;font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.5px;
+            margin-bottom:14px;
+        }
+        .approved .loan-detail-title{
+            color:#16a34a;
+        }
+        .rejected .loan-detail-title{
+            color:#dc2626;
+        }
+        .detail-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+        }
+        .detail-item{
+            background:rgba(255,255,255,0.7);
+            border-radius:8px;padding:10px 12px;
+        }
+        .detail-label{
+            font-size:0.7rem;color:#64748b;
+            text-transform:uppercase;
+            letter-spacing:0.5px;margin-bottom:3px;
+        }
+        .detail-value{
+            font-size:0.92rem;font-weight:700;
+            color:#1e293b;
+        }
+
+        /* AMOUNT HIGHLIGHT */
+        .amount-highlight{
+            text-align:center;
+            background:linear-gradient(135deg,
+                #1a3c5e,#2563a8);
+            border-radius:10px;
+            padding:18px;margin:16px 0;color:#fff;
+        }
+        .amount-label{
+            font-size:0.72rem;opacity:0.8;
+            text-transform:uppercase;
+            letter-spacing:0.5px;margin-bottom:4px;
+        }
+        .amount-value{
+            font-size:1.8rem;font-weight:700;
+        }
+
+        /* EMI INFO */
+        .emi-box{
+            background:#f0f9ff;
+            border:1px solid #bae6fd;
+            border-radius:10px;
+            padding:16px;margin:16px 0;
+        }
+        .emi-title{
+            font-size:0.78rem;font-weight:700;
+            color:#0369a1;margin-bottom:10px;
+            text-transform:uppercase;
+            letter-spacing:0.5px;
+        }
+        .emi-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:8px;
+        }
+        .emi-item{text-align:center}
+        .emi-label{
+            font-size:0.68rem;color:#0369a1;
+        }
+        .emi-value{
+            font-size:0.9rem;font-weight:700;
+            color:#1e293b;margin-top:2px;
+        }
+
+        /* REMARKS */
+        .remarks-box{
+            background:#fffbeb;
+            border:1px solid #fde68a;
+            border-radius:8px;
+            padding:14px 16px;margin:16px 0;
+        }
+        .remarks-title{
+            font-size:0.75rem;font-weight:700;
+            color:#92400e;margin-bottom:4px;
+        }
+        .remarks-text{
+            font-size:0.875rem;color:#78350f;
+        }
+
+        /* NEXT STEPS */
+        .next-steps{
+            background:#f8fafc;
+            border-radius:10px;padding:16px;
+            margin:16px 0;
+        }
+        .ns-title{
+            font-size:0.82rem;font-weight:700;
+            color:#1e293b;margin-bottom:10px;
+        }
+        .ns-list{
+            list-style:none;
+        }
+        .ns-list li{
+            font-size:0.82rem;color:#64748b;
+            padding:4px 0;
+            display:flex;align-items:center;gap:8px;
+        }
+
+        .footer{
+            background:#f8fafc;
+            border-radius:0 0 16px 16px;
+            padding:16px 32px;text-align:center;
+        }
+        .footer-text{
+            font-size:0.72rem;color:#94a3b8;
+            line-height:1.6;
+        }
+        .logo{
+            font-weight:700;color:#1a3c5e;
+            font-size:0.95rem;
+        }
+        .logo span{color:#f0a500}
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <!-- HEADER — changes based on status -->
+    <div th:class="${status == 'APPROVED'}
+         ? 'header-approved' : 'header-rejected'">
+        <div class="header-icon"
+             th:text="${status == 'APPROVED'}
+                 ? '🎉' : '❌'">
+        </div>
+        <div class="header-title"
+             th:text="${status == 'APPROVED'}
+                 ? 'Loan Approved!'
+                 : 'Loan Application Update'">
+        </div>
+        <div class="header-sub"
+             th:text="${status == 'APPROVED'}
+                 ? 'Amount credited to your account'
+                 : 'We could not process your application'">
+        </div>
+    </div>
+
+    <div class="body">
+
+        <div class="greeting">
+            Dear
+            <span th:text="${fullName}">
+                Customer
+            </span>,
+        </div>
+
+        <p class="text"
+           th:if="${status == 'APPROVED'}">
+            Great news! Your loan application
+            has been <strong>approved</strong>
+            by our branch manager.
+            The loan amount has been
+            <strong>credited to your account</strong>.
+        </p>
+
+        <p class="text"
+           th:unless="${status == 'APPROVED'}">
+            We regret to inform you that your
+            loan application could not be
+            approved at this time.
+            Please review the remarks below
+            for more details.
+        </p>
+
+        <!-- Loan Details Card -->
+        <div th:class="${status == 'APPROVED'}
+             ? 'loan-detail-card approved'
+             : 'loan-detail-card rejected'">
+            <div class="loan-detail-title">
+                Loan Application Details
+            </div>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Loan ID
+                    </div>
+                    <div class="detail-value"
+                         th:text="'#' + ${loanId}">
+                        #1
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Status
+                    </div>
+                    <div class="detail-value"
+                         th:text="${status}">
+                        APPROVED
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Tenure
+                    </div>
+                    <div class="detail-value"
+                         th:text="${tenureMonths}
+                             + ' months'">
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Interest Rate
+                    </div>
+                    <div class="detail-value"
+                         th:text="${interestRate}
+                             + '% p.a.'">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Amount Highlight -->
+        <div class="amount-highlight">
+            <div class="amount-label">
+                Loan Amount
+            </div>
+            <div class="amount-value">
+                ₹<span th:text="${#numbers
+                    .formatDecimal(amount,1,
+                    'COMMA',2,'POINT')}">
+                </span>
+            </div>
+        </div>
+
+        <!-- EMI Info (only for approved) -->
+        <div class="emi-box"
+             th:if="${status == 'APPROVED'}">
+            <div class="emi-title">
+                📊 EMI Information
+            </div>
+            <div class="emi-grid">
+                <div class="emi-item">
+                    <div class="emi-label">
+                        Monthly EMI
+                    </div>
+                    <div class="emi-value"
+                         th:text="'₹' + ${monthlyEmi}">
+                    </div>
+                </div>
+                <div class="emi-item">
+                    <div class="emi-label">
+                        Total Interest
+                    </div>
+                    <div class="emi-value"
+                         th:text="'₹' +
+                             ${totalInterest}">
+                    </div>
+                </div>
+                <div class="emi-item">
+                    <div class="emi-label">
+                        Total Payable
+                    </div>
+                    <div class="emi-value"
+                         th:text="'₹' +
+                             ${totalPayable}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manager Remarks -->
+        <div class="remarks-box"
+             th:if="${remarks != null
+                 and !remarks.isEmpty()}">
+            <div class="remarks-title">
+                📋 Manager Remarks:
+            </div>
+            <div class="remarks-text"
+                 th:text="${remarks}">
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="next-steps">
+            <div class="ns-title"
+                 th:text="${status == 'APPROVED'}
+                     ? 'Next Steps:'
+                     : 'What can you do?'">
+            </div>
+            <ul class="ns-list"
+                th:if="${status == 'APPROVED'}">
+                <li>✅ Check your account balance —
+                    amount has been credited</li>
+                <li>📋 Keep track of your
+                    repayment schedule</li>
+                <li>🔔 Set reminders for
+                    EMI due dates</li>
+                <li>💬 Contact us if you have
+                    any questions</li>
+            </ul>
+            <ul class="ns-list"
+                th:unless="${status == 'APPROVED'}">
+                <li>📝 Review the rejection
+                    reason above</li>
+                <li>⏰ You can re-apply after
+                    addressing the concerns</li>
+                <li>💬 Contact your branch
+                    manager for guidance</li>
+                <li>🏦 Consider applying for
+                    a smaller loan amount</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="logo">
+            Secure<span>Bank</span>
+        </div>
+        <p class="footer-text" style="margin-top:6px">
+            © 2024
+            <span th:text="${bankName}">
+                SecureBank
+            </span>.
+            All rights reserved.
+        </p>
+    </div>
+
+</div>
+</body>
+</html>

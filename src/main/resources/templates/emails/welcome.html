@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,
+                   initial-scale=1.0">
+    <title>Welcome to SecureBank</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:'Segoe UI',Arial,sans-serif;
+            background:#f1f5f9;
+            padding:20px;
+        }
+        .wrapper{
+            max-width:600px;margin:0 auto;
+        }
+        .header{
+            background:linear-gradient(135deg,
+                #1a3c5e 0%,#2563a8 100%);
+            border-radius:16px 16px 0 0;
+            padding:36px 40px;text-align:center;
+        }
+        .logo{
+            font-size:1.8rem;font-weight:700;
+            color:#fff;letter-spacing:-0.5px;
+        }
+        .logo span{color:#f0a500}
+        .tagline{
+            color:rgba(255,255,255,0.75);
+            font-size:0.8rem;margin-top:4px;
+            text-transform:uppercase;
+            letter-spacing:1.5px;
+        }
+        .body{
+            background:#fff;padding:40px;
+        }
+        .greeting{
+            font-size:1.3rem;font-weight:700;
+            color:#1e293b;margin-bottom:12px;
+        }
+        .text{
+            color:#64748b;font-size:0.92rem;
+            line-height:1.8;margin-bottom:16px;
+        }
+        .highlight-box{
+            background:linear-gradient(135deg,
+                #eff6ff,#dbeafe);
+            border:1px solid #bfdbfe;
+            border-radius:12px;
+            padding:20px 24px;
+            margin:24px 0;
+        }
+        .highlight-title{
+            font-size:0.85rem;font-weight:700;
+            color:#1d4ed8;margin-bottom:12px;
+            display:flex;align-items:center;gap:6px;
+        }
+        .step-list{
+            list-style:none;
+        }
+        .step-list li{
+            display:flex;align-items:flex-start;
+            gap:10px;font-size:0.85rem;
+            color:#1e40af;padding:5px 0;
+        }
+        .step-num{
+            background:#2563a8;color:#fff;
+            width:20px;height:20px;
+            border-radius:50%;
+            display:flex;align-items:center;
+            justify-content:center;
+            font-size:0.68rem;font-weight:700;
+            flex-shrink:0;margin-top:1px;
+        }
+        .features-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;margin:20px 0;
+        }
+        .feature-item{
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+            border-radius:10px;
+            padding:14px;
+            text-align:center;
+        }
+        .feature-icon{
+            font-size:1.5rem;margin-bottom:6px;
+        }
+        .feature-name{
+            font-size:0.78rem;font-weight:600;
+            color:#1e293b;
+        }
+        .footer{
+            background:#f8fafc;
+            border-radius:0 0 16px 16px;
+            padding:20px 40px;
+            text-align:center;
+        }
+        .footer-text{
+            font-size:0.75rem;color:#94a3b8;
+            line-height:1.6;
+        }
+        .divider{
+            height:1px;background:#e2e8f0;
+            margin:16px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">
+            Secure<span>Bank</span>
+        </div>
+        <div class="tagline">
+            Your Trusted Banking Partner
+        </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="body">
+        <div class="greeting">
+            Welcome, <span
+                th:text="${fullName}">Customer</span>!
+            🎉
+        </div>
+
+        <p class="text">
+            Thank you for choosing
+            <strong th:text="${bankName}">
+                SecureBank
+            </strong>.
+            Your registration has been received
+            and your account is currently
+            under review by our team.
+        </p>
+
+        <div class="highlight-box">
+            <div class="highlight-title">
+                ⏳ What happens next?
+            </div>
+            <ul class="step-list">
+                <li>
+                    <span class="step-num">1</span>
+                    Our branch manager reviews
+                    your application
+                </li>
+                <li>
+                    <span class="step-num">2</span>
+                    Account gets activated within
+                    1-2 business days
+                </li>
+                <li>
+                    <span class="step-num">3</span>
+                    You receive a confirmation email
+                    with your account number
+                </li>
+                <li>
+                    <span class="step-num">4</span>
+                    Login and start banking!
+                </li>
+            </ul>
+        </div>
+
+        <p class="text">
+            Once activated, you'll have access to:
+        </p>
+
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">💸</div>
+                <div class="feature-name">
+                    Fund Transfers
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🏦</div>
+                <div class="feature-name">
+                    Loan Services
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💎</div>
+                <div class="feature-name">
+                    Fixed Deposits
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <div class="feature-name">
+                    Account Insights
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <p class="text" style="font-size:0.82rem;
+            color:#94a3b8">
+            Registered email:
+            <strong
+                th:text="${email}"
+                style="color:#1e293b">
+            </strong><br>
+            If you did not register,
+            please ignore this email or
+            contact support immediately.
+        </p>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p class="footer-text">
+            © 2024
+            <span th:text="${bankName}">
+                SecureBank
+            </span>.
+            All rights reserved.<br>
+            This is an automated message.
+            Please do not reply directly.
+        </p>
+    </div>
+
+</div>
+</body>
+</html>
