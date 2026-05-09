@@ -3,6 +3,15 @@
 
 
 <div align="center">
+A production-grade digital banking platform built with **Spring Boot 3**, **Spring Security 6**, **Thymeleaf**, and **PostgreSQL**. Features multi-role access, real-time transactions, loan management, fixed deposits, audit logging, and email notifications.
+
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-green)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+![Docker](https://img.shields.io/badge/Docker-Compose-blue)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6-darkgreen)
+
+---
 
 
 
