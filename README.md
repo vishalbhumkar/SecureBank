@@ -1804,11 +1804,11 @@ copies of the Software...
 
 
 
-\- 📧 Email: your-email@example.com
+\- 📧 Email: vishalbhumkar12@gmail.com
 
-\- 💼 LinkedIn: \[linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
+\- 💼 LinkedIn: \[www.linkedin.com/in/vishal-bhumkar-837a9327a](www.linkedin.com/in/vishal-bhumkar-837a9327a)
 
-\- 🐙 GitHub: \[github.com/yourusername](https://github.com/yourusername)
+\- 🐙 GitHub: \[github.com/vishalbhumkar]
 
 
 
