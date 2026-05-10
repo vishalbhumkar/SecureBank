@@ -44,17 +44,20 @@ public class SecurityConfig {
             .ignoringRequestMatchers("/api/**")
         )
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/css/**", "/js/**", "/images/**",
-                "/webjars/**", "/favicon.ico"
-            ).permitAll()
-            .requestMatchers("/auth/**").permitAll()
-            .requestMatchers("/api/v1/auth/**").permitAll()
-            .requestMatchers(
-                "/swagger-ui.html",
-                "/swagger-ui/**",
-                "/api-docs/**"
-            ).permitAll()
+        		.requestMatchers(
+        			    "/css/**", "/js/**", "/images/**",
+        			    "/webjars/**", "/favicon.ico"
+        			).permitAll()
+        			.requestMatchers("/auth/**").permitAll()
+        			.requestMatchers("/api/v1/auth/**").permitAll()
+        			.requestMatchers(
+        			    "/swagger-ui.html",
+        			    "/swagger-ui/**",
+        			    "/api-docs",
+        			    "/api-docs/**",
+        			    "/v3/api-docs",
+        			    "/v3/api-docs/**"
+        			).permitAll()
             .requestMatchers("/admin/**").hasRole("ADMIN")
             .requestMatchers("/manager/**")
                 .hasAnyRole("ADMIN", "MANAGER")
