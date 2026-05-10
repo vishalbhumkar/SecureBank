@@ -2,59 +2,81 @@ package com.securebank.api;
 
 import com.securebank.dto.request.ApiLoginRequest;
 import com.securebank.dto.request.RegisterRequest;
+import com.securebank.dto.response.AccountResponse;
 import com.securebank.dto.response.ApiResponse;
 import com.securebank.dto.response.DashboardResponse;
-import com.securebank.dto.response.AccountResponse;
+import com.securebank.dto.response.JwtResponse;
 import com.securebank.model.Account;
 import com.securebank.model.User;
 import com.securebank.service.AccountService;
+import com.securebank.service.CustomUserDetailsService;
+import com.securebank.service.JwtService;
 import com.securebank.service.LoanService;
 import com.securebank.service.TransactionService;
 import com.securebank.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication
-        .AuthenticationManager;
-import org.springframework.security.authentication
-        .UsernamePasswordAuthenticationToken;
-import org.springframework.security.core
-        .annotation.AuthenticationPrincipal;
-import org.springframework.security.core
-        .userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Auth API", description = "Authentication and user session operations")
 public class AuthApiController {
 
     private final UserService userService;
     private final AccountService accountService;
     private final LoanService loanService;
-    private final TransactionService
-            transactionService;
-    private final AuthenticationManager
-            authenticationManager;
+    private final TransactionService transactionService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+    private final CustomUserDetailsService userDetailsService;
 
     public AuthApiController(
             UserService userService,
             AccountService accountService,
             LoanService loanService,
             TransactionService transactionService,
-            AuthenticationManager
-                    authenticationManager) {
+            AuthenticationManager authenticationManager,
+            JwtService jwtService,
+            CustomUserDetailsService userDetailsService) {
         this.userService = userService;
         this.accountService = accountService;
         this.loanService = loanService;
         this.transactionService = transactionService;
-        this.authenticationManager =
-                authenticationManager;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
     }
 
     // POST /api/v1/auth/register
-
+    @Operation(
+        summary = "Register new customer",
+        description = "Registers a new customer account. Account requires manager approval before login is allowed."
+    )
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200", description = "Registration successful — awaiting approval"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400", description = "Validation error — check request fields"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "409", description = "Email already registered")
+    })
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<String>> register(
             @Valid @RequestBody RegisterRequest request) {
@@ -63,19 +85,33 @@ public class AuthApiController {
             return ResponseEntity.ok(
                     ApiResponse.success(
                             request.getEmail(),
-                            "Registration successful! "
-                            + "Await account approval."));
+                            "Registration successful! Await account approval."));
         } catch (Exception e) {
-            throw new RuntimeException(
-                    e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
     // POST /api/v1/auth/login
-    // Session-based login for API
-
+    @Operation(
+        summary = "Login and get JWT token",
+        description = "Authenticates user and returns a JWT Bearer token. " +
+                      "Use this token in Authorization header for all API requests."
+    )
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200", description = "Login successful — JWT token returned"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "401", description = "Invalid credentials"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "423", description = "Account locked")
+    })
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Map<String, String>>> login(
+    public ResponseEntity<ApiResponse<JwtResponse>> login(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                description = "Login credentials",
+                required = true,
+                content = @Content(schema = @Schema(implementation = ApiLoginRequest.class))
+            )
             @RequestBody ApiLoginRequest request) {
         try {
             authenticationManager.authenticate(
@@ -83,31 +119,47 @@ public class AuthApiController {
                             request.getEmail(),
                             request.getPassword()));
 
+            UserDetails userDetails =
+                    userDetailsService.loadUserByUsername(request.getEmail());
+
+            String token = jwtService.generateToken(userDetails);
+
+            User user = userService
+                    .findByEmail(request.getEmail())
+                    .orElseThrow();
+
+            JwtResponse jwtResponse = new JwtResponse(
+                    token,
+                    user.getEmail(),
+                    user.getRole().name(),
+                    user.getFullName());
+
             return ResponseEntity.ok(
-                    ApiResponse.success(
-                            Map.of(
-                                "email",
-                                request.getEmail(),
-                                "status",
-                                "authenticated"),
-                            "Login successful"));
+                    ApiResponse.success(jwtResponse, "Login successful"));
+
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Invalid credentials");
+            throw new RuntimeException("Invalid credentials");
         }
     }
 
-    // GET /api/v1/auth/me — current user info
-
+    // GET /api/v1/auth/me
+    @Operation(
+        summary = "Get current user",
+        description = "Returns profile information of the currently logged-in user including role and status."
+    )
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200", description = "User info retrieved"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "401", description = "Not logged in")
+    })
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getCurrentUser(
             @AuthenticationPrincipal UserDetails ud) {
 
         User user = userService
                 .findByEmail(ud.getUsername())
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Map<String, Object> info = Map.of(
                 "id", user.getId(),
@@ -118,69 +170,66 @@ public class AuthApiController {
                 "locked", user.isLocked()
         );
 
-        return ResponseEntity.ok(
-                ApiResponse.success(info));
+        return ResponseEntity.ok(ApiResponse.success(info));
     }
 
     // GET /api/v1/auth/dashboard
-
+    @Operation(
+        summary = "Get customer dashboard",
+        description = "Returns complete dashboard data including accounts, total balance, transactions count and pending loans."
+    )
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200", description = "Dashboard data retrieved successfully"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "401", description = "Unauthorized — please login"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "403", description = "Forbidden — insufficient role")
+    })
     @GetMapping("/dashboard")
     public ResponseEntity<ApiResponse<DashboardResponse>> getDashboard(
             @AuthenticationPrincipal UserDetails ud) {
 
         User user = userService
                 .findByEmail(ud.getUsername())
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Account> accounts =
-                accountService.getAccountsByUser(user);
+        List<Account> accounts = accountService.getAccountsByUser(user);
 
-        List<AccountResponse> accountResponses =
-                accounts.stream().map(a -> {
-                    AccountResponse r =
-                            new AccountResponse();
-                    r.setId(a.getId());
-                    r.setAccountNumber(
-                            a.getAccountNumber());
-                    r.setAccountType(
-                            a.getAccountType().name());
-                    r.setBalance(a.getBalance());
-                    r.setActive(a.isActive());
-                    r.setCreatedAt(a.getCreatedAt());
-                    r.setOwnerName(
-                            user.getFullName());
-                    r.setOwnerEmail(user.getEmail());
-                    return r;
-                }).toList();
+        List<AccountResponse> accountResponses = accounts.stream().map(a -> {
+            AccountResponse r = new AccountResponse();
+            r.setId(a.getId());
+            r.setAccountNumber(a.getAccountNumber());
+            r.setAccountType(a.getAccountType().name());
+            r.setBalance(a.getBalance());
+            r.setActive(a.isActive());
+            r.setCreatedAt(a.getCreatedAt());
+            r.setOwnerName(user.getFullName());
+            r.setOwnerEmail(user.getEmail());
+            return r;
+        }).toList();
 
         int totalTxns = accounts.stream()
                 .mapToInt(a -> transactionService
-                        .getTransactionHistory(a)
-                        .size())
+                        .getTransactionHistory(a).size())
                 .sum();
 
         int pendingLoans = (int) loanService
                 .getLoansByUser(user)
                 .stream()
-                .filter(l -> l.getStatus()
-                        .name().equals("PENDING"))
+                .filter(l -> l.getStatus().name().equals("PENDING"))
                 .count();
 
-        DashboardResponse dashboard =
-                new DashboardResponse();
+        DashboardResponse dashboard = new DashboardResponse();
         dashboard.setFullName(user.getFullName());
         dashboard.setEmail(user.getEmail());
-        dashboard.setTotalBalance(
-                accountService.getTotalBalance(user));
+        dashboard.setTotalBalance(accountService.getTotalBalance(user));
         dashboard.setTotalAccounts(accounts.size());
         dashboard.setTotalTransactions(totalTxns);
         dashboard.setPendingLoans(pendingLoans);
         dashboard.setAccounts(accountResponses);
 
         return ResponseEntity.ok(
-                ApiResponse.success(dashboard,
-                        "Dashboard data retrieved"));
+                ApiResponse.success(dashboard, "Dashboard data retrieved"));
     }
 }

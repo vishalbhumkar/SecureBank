@@ -1,7 +1,18 @@
 package com.securebank.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.securebank.dto.request.TransferRequest;
 import com.securebank.dto.response.TransactionResponse;
+import com.securebank.exception.BankingException;
+import com.securebank.exception.ResourceNotFoundException;
 import com.securebank.model.Account;
 import com.securebank.model.AuditLog;
 import com.securebank.model.Transaction;
@@ -11,14 +22,6 @@ import com.securebank.model.enums.TransactionType;
 import com.securebank.repository.AccountRepository;
 import com.securebank.repository.AuditLogRepository;
 import com.securebank.repository.TransactionRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -53,14 +56,13 @@ public class TransactionService {
                 .filter(Account::isActive)
                 .findFirst()
                 .orElseThrow(() ->
-                        new RuntimeException("No active account found"));
+                 new ResourceNotFoundException("Account", "status", "active"));
 
         // Get recipient account
         Account toAccount = accountRepository
                 .findByAccountNumber(request.getToAccountNumber())
                 .orElseThrow(() ->
-                        new RuntimeException("Recipient account not found: "
-                                + request.getToAccountNumber()));
+                 new ResourceNotFoundException("Account", "accountNumber", request.getToAccountNumber()));
 
         if (fromAccount.getAccountNumber()
                 .equals(toAccount.getAccountNumber())) {
@@ -70,9 +72,7 @@ public class TransactionService {
 
         if (fromAccount.getBalance()
                 .compareTo(request.getAmount()) < 0) {
-            throw new RuntimeException(
-                    "Insufficient balance. Available: ₹"
-                            + fromAccount.getBalance());
+        	throw new BankingException("Insufficient balance. Available: Rs." + fromAccount.getBalance(), "INSUFFICIENT_BALANCE");
         }
 
         // Debit sender

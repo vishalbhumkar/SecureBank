@@ -1,5 +1,15 @@
 package com.securebank.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.securebank.exception.BankingException;
+import com.securebank.exception.ResourceNotFoundException;
 import com.securebank.model.Account;
 import com.securebank.model.Loan;
 import com.securebank.model.Transaction;
@@ -10,13 +20,6 @@ import com.securebank.model.enums.TransactionType;
 import com.securebank.repository.AccountRepository;
 import com.securebank.repository.LoanRepository;
 import com.securebank.repository.TransactionRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class LoanService {
@@ -61,11 +64,10 @@ public class LoanService {
                             User manager) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() ->
-                        new RuntimeException("Loan not found"));
+                new ResourceNotFoundException("Loan", "id", loanId));
 
         if (loan.getStatus() != LoanStatus.PENDING) {
-            throw new RuntimeException(
-                    "Loan is already " + loan.getStatus());
+            throw new BankingException("Loan is already " + loan.getStatus(), "INVALID_LOAN_STATUS");
         }
 
         // Credit loan amount to customer's primary account
