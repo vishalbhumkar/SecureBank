@@ -33,7 +33,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/securebank
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: SecureBank@2024
+      SPRING_DATASOURCE_PASSWORD: Vishal
       SPRING_MAIL_USERNAME: securebankadmin@gmail.com
       SPRING_MAIL_PASSWORD: jkwd qcom wtdv vchx
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
