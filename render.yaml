@@ -1,14 +1,11 @@
 services:
   - type: web
     name: securebank
-    runtime: java
-    plan: free
+    env: java
     region: singapore
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: >
-      java -Xmx400m
-      -Djava.security.egd=file:/dev/./urandom
-      -jar target/securebank.jar
+    plan: free
+    buildCommand: "./mvnw clean package -DskipTests"
+    startCommand: "java -Xmx400m -Djava.security.egd=file:/dev/./urandom -jar target/securebank.jar"
     healthCheckPath: /auth/login
     envVars:
       - key: DATABASE_URL
@@ -33,8 +30,6 @@ services:
         sync: false
       - key: BANK_NAME
         value: SecureBank
-      - key: SPRING_PROFILES_ACTIVE
-        value: production
 
 databases:
   - name: securebank-db
