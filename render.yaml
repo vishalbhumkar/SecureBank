@@ -33,6 +33,8 @@ services:
         sync: false
       - key: BANK_NAME
         value: SecureBank
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
 
 databases:
   - name: securebank-db
