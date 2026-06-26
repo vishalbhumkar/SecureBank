@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: securebank
+    runtime: java
+    plan: free
+    region: singapore
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: >
+      java -Xmx400m
+      -Djava.security.egd=file:/dev/./urandom
+      -jar target/securebank.jar
+    healthCheckPath: /auth/login
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: securebank-db
+          property: connectionString
+      - key: DATABASE_USERNAME
+        fromDatabase:
+          name: securebank-db
+          property: user
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: securebank-db
+          property: password
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: BANK_NAME
+        value: SecureBank
+
+databases:
+  - name: securebank-db
+    databaseName: securebank
+    user: securebank_user
+    plan: free
+    region: singapore

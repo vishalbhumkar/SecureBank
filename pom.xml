@@ -40,7 +40,6 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-        <!-- Thymeleaf + Spring Security -->
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
             <artifactId>thymeleaf-extras-springsecurity6</artifactId>
@@ -76,7 +75,17 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <!-- ================= CACHE ================= -->
+        <!-- Required for @Cacheable / @CacheEvict
+             in AdminService.java -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
         <!-- ================= JWT ================= -->
+        <!-- Keep only if actually using JWT auth.
+             Not needed for session-based auth. -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -119,6 +128,10 @@
         </dependency>
 
         <!-- ================= DEVTOOLS ================= -->
+        <!-- Excluded from final JAR automatically by
+             Spring Boot plugin since scope=runtime +
+             optional=true, but listed here only for
+             local development convenience -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -133,7 +146,6 @@
             <scope>test</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
@@ -143,30 +155,22 @@
     </dependencies>
 
     <!-- ================= BUILD ================= -->
-   <build>
-    <finalName>securebank</finalName>
-    <plugins>
-        <plugin>
-            <groupId>
-                org.springframework.boot
-            </groupId>
-            <artifactId>
-                spring-boot-maven-plugin
-            </artifactId>
-            <configuration>
-                <excludes>
-                    <exclude>
-                        <groupId>
-                            org.projectlombok
-                        </groupId>
-                        <artifactId>
-                            lombok
-                        </artifactId>
-                    </exclude>
-                </excludes>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
+    <build>
+        <finalName>securebank</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
