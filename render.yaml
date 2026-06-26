@@ -30,6 +30,10 @@ services:
         sync: false
       - key: BANK_NAME
         value: SecureBank
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION
+        value: "86400000"
       - key: PORT
         value: "8080"
 
