@@ -1,11 +1,11 @@
 services:
   - type: web
     name: securebank
-    env: java
+    runtime: docker
     region: singapore
     plan: free
-    buildCommand: "./mvnw clean package -DskipTests"
-    startCommand: "java -Xmx400m -Djava.security.egd=file:/dev/./urandom -jar target/securebank.jar"
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /auth/login
     envVars:
       - key: DATABASE_URL
@@ -30,6 +30,8 @@ services:
         sync: false
       - key: BANK_NAME
         value: SecureBank
+      - key: PORT
+        value: "8080"
 
 databases:
   - name: securebank-db
